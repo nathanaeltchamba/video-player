@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+    <div class="searchbar mt-4">
+        <form class="d-flex my-2 my-lg-0" method="GET" action="{% url 'search' %}">
+            <input class="form-control me-sm-2 border border-primary rounded-pill" type="text" name="search_query"
+                placeholder="Search videos by title">
+            <button class="form-inline btn btn-outline-primary my-2 my-sm-0 rounded-pill" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+{% if videos %}
+    {% for video in videos %}
+        {% if not video.is_private %}
+  
+    <div class="container mt-5">
+        <div class="border border-light bg-light">
+            <div class="row gap-0 mb-5">
+                <div class="col-4 offset-2">
+                    <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3" src="/media/{{ video.thumbnail_upload }}"
+                        width="360" height="240" alt="thumbnail image"></a>
+                    </div>
+                    <div class="col-5 offset-1 ">
+                        <div id="video-description" class=" p-3 ">
+                            <a class="link-dark text-decoration-none" href="{% url 'video-detail' video.slug %}"><h3 id="search-title" class="fw-light">{{ video.title }}</h3></a>
+                            <p class="fw-light text-sm">{{video.view_count|format_view_count}} views &bull; {{ video.elapsed_time }}</p>
+                            <a class="link-dark text-decoration-none" href="{% url 'profile' user.username %}"><p class="fw-light text-sm">@{{video.creator}}</p></a>
+                            <p class="fw-light">{{ video.description }}</p>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        </div>
+    
+        {% endif %}
+    {% endfor %}
+{% else %}
+<div class="container mt-5">
+    <h3 class="text-center mb-2">{{message}}</h3>
+    {% for video in suggested_videos %}
+        {% if not video.is_private %}
+            <div class="border border-light bg-light">
+                <div class="row gap-0 my-5">
+                    <div class="col-4 offset-2">
+                        <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3" src="/media/{{ video.thumbnail_upload }}"
+                                width="360" height="240" alt="thumbnail image"></a>
+                    </div>
+                    <div class="col-5 offset-1 ">
+                        <div id="video-description" class=" p-3 ">
+                            <a class="link-dark text-decoration-none" href="{% url 'video-detail' video.slug %}">
+                                <h3 id="search-title" class="fw-light">{{ video.title }}</h3>
+                            </a>
+                            <p class="fw-light text-sm">{{video.view_count|format_view_count}} views &bull; {{ video.elapsed_time }}</p>
+                            <a class="link-dark text-decoration-none" href="{% url 'profile' user.username %}">
+                                <p class="fw-light text-sm">@{{video.creator}}</p>
+                            </a>
+                            <p class="fw-light">{{ video.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock content %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="searchbar mt-4">
+        <form class="d-flex my-2 my-lg-0" method="GET" action="{% url 'search' %}">
+            <input class="form-control me-sm-2 border border-primary rounded-pill" type="text" name="search_query"
+                placeholder="Search videos by title">
+            <button class="form-inline btn btn-outline-primary my-2 my-sm-0 rounded-pill" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="text-center mt-5">
+        <h1>Create a Video to View your Profile</h1>
+        <h3>Click <a href="{% url 'video-create' %}">Here</a> To Upload a Video</h3>
+    </div>
+</div>
+{% endblock content %}

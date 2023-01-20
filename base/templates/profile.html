@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <!-- add row when you put the django template comment back  -->
+    <!-- context is customer_user -->
+    <div class="searchbar mt-4">
+        <form class="d-flex my-2 my-lg-0" method="GET" action="{% url 'search' %}">
+            <input class="form-control me-sm-2 border border-primary rounded-pill" type="text" name="search_query"
+                placeholder="Search videos by title">
+            <button class="form-inline btn btn-outline-primary my-2 my-sm-0 rounded-pill" type="submit">Search</button>
+        </form>
+    </div>
+    <div class="profile-page">
+        <h4 class="text-center mt-4">{{ custom_user.username | title }}'s Channel</h4>
+        <hr>
+
+        <div>
+            <div class="d-flex justify-content-between">
+                <h5>{{ custom_user.username }}'s Video List</h5>
+                {% if user.username == custom_user.username %}
+                <a class="btn btn-outline-primary" href="{% url 'video-create' %}">Upload</a>
+                {% endif %}
+            </div>
+            <div class="row">
+            {% for video in videos %}
+                {% if not video.is_private %}
+                    <div class="col-md-4">
+                        <div class="profile-videos">
+                            <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3" src="/media/{{ video.thumbnail_upload }}"
+                                    width="360" height="240" alt="thumbnail image"></a>
+                            <div class="caption">
+                                <div>
+                                    <a class="link-dark text-decoration-none" href="{% url 'video-detail' video.slug %}">
+                                        <h4 class="mt-2 text-break fw-bold">{{video.title}}</h4>
+                                    </a>
+                                    <a class="text-decoration-none text-dark fw-lighter fst-italic my-3"
+                                        href="{% url 'profile' video.creator.username %}">@{{video.creator|title}}</a>
+                                </div>
+                                <div class="row">
+                                    <div class="col-7">
+                                        <p class="fw-light fst-italic">{{video.view_count|format_view_count}} views</p>
+                                    </div>
+                                    <div class="col-5">
+                                        <p class="text-md ms-4 fw-light fst-italic">{{video.elapsed_time}}</p>
+                                    </div>
+                                </div>
+                                <!-- <p class="mt-2 border bg-light rounded-pill text-truncate overflow-auto p-2">{{video.description}}</p> -->
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+    {% if user.username == custom_user.username %}
+        {% for video in videos %}
+            {% if video.is_private %}
+            <h5>{{custom_user.username}}'s Private Video List </h5>
+            <hr>
+            <div class="col-md-4">
+                <div class="profile-videos">
+                    <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3" src="/media/{{ video.thumbnail_upload }}"
+                            width="360" height="240" alt="thumbnail image"></a>
+                    <div class="caption">
+                        <div class="my-4">
+                            <a class="link-dark text-decoration-none" href="{% url 'video-detail' video.slug %}">
+                                <h4 class="mt-2 text-break fw-bold">{{video.title}}</h4>
+                            </a>
+                            <a class="text-decoration-none text-dark fw-lighter fst-italic my-3"
+                                href="{% url 'profile' video.creator.username %}">@{{video.creator|title}} &bull;
+                                {{video.elapsed_time}}</a>
+                        </div>
+                        <!-- <p class="mt-2 border bg-light rounded-pill text-truncate overflow-auto p-2">{{video.description}}</p> -->
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    </div>
+
+</div>
+
+{% endblock content %}

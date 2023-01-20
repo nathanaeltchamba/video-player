@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+
+
+<div class="container">
+    <div class="searchbar mt-4">
+        <form class="d-flex my-2 my-lg-0" method="GET" action="{% url 'search' %}">
+            <input class="form-control me-sm-2 border border-primary rounded-pill" type="text" name="search_query"
+                placeholder="Search videos by title">
+            <button class="form-inline btn btn-outline-primary my-2 my-sm-0 rounded-pill" type="submit">Search</button>
+        </form>
+    </div>
+    <h4 class="text-center m-4">Video List</h4>
+
+    <div class="row">
+
+        {% for video in videos %}
+        <div class="col-md-4">
+            <div class="thumbnail">
+                <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3"
+                        src="/media/{{video.thumbnail_upload }}" width="420" height="280" alt="thumbnail image"></a>
+                <div class="caption">
+                    <div>
+                        <a class="link-dark text-decoration-none" href="{% url 'video-detail' video.slug %}">
+                            <h4 class="mt-2 text-break fw-bold">{{video.title}}</h4>
+                        </a>
+                        <a class="text-decoration-none text-dark fw-lighter fst-italic my-3"
+                            href="{% url 'profile' video.creator.username %}">@{{video.creator|title}}</a>
+                    </div>
+                    <div class="row">
+                        <div class="col-8">
+                            <p class="fw-light fst-italic">{{video.view_count|format_view_count}} views</p>
+                        </div>
+                        <div class="col-4">
+                            <p class="text-sm ms-4 fw-light">{{video.elapsed_time}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+
+
+{% endblock content %}

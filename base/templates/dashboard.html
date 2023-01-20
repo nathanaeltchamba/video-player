@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h3 class="fw-light">{{ username|title }}'s Channel Dashboard</h3>
+    <!-- <canvas id="myChart"></canvas> -->
+    <hr>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card text-white bg-dark h-100 overflow-auto">
+                <div class="card-body p-5 mt-3">
+                    <h5 class="card-title"><i class="fas fa-thin fa-video"></i> Total Videos</h5>
+                    <p class="card-text" id="total-videos">{{number_of_videos}}</p>
+                    {% if private_videos > 0 %}
+                    <p class="card-text" id="private-videos">Private Videos: {{ private_videos }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card text-white bg-dark h-100 overflow-auto">
+                <div class="card-body p-5 mt-3">
+                    <h5 class="card-title"><i class="fa fa-user-friends"></i> Total Views</h5>
+                    <p class="card-text" id="total-views">{{total_views|format_view_count}} views</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card text-white bg-dark h-100 overflow-auto">
+                <div class="card-body p-5 mt-3">
+                    <h5 class="card-title"><i class="fas fa-thin fa-fire"></i> Most Popular Videos</h5>
+                    <p class="card-text" id="popular-videos">
+                    <ul class="list-unstyled">
+                        {% for video in popular_videos %}
+                        <li>{{ video.title }} &bull; {{video.view_count|format_view_count}} views</li>
+                        {% endfor %}
+                    </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

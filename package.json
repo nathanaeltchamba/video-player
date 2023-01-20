@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "echarts": "^5.4.1",
+    "plyr": "^3.7.3"
+  }
+}
