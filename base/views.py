@@ -1,12 +1,12 @@
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views import View
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, TemplateView, CreateView
 from django.db.models import F, Q, Sum
-from .forms import CustomUserCreationForm
-from . models import CustomUser, VideoModel
+from .forms import CustomUserCreationForm, UpdateProfileForm
+from . models import User, VideoModel, CustomProfile
 
 
 # Create your views here.
@@ -38,12 +38,31 @@ class ProfileView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            custom_user = get_object_or_404(CustomUser, username=kwargs['username'])
+            custom_user = get_object_or_404(User, username=kwargs['username'])
             videos = VideoModel.objects.filter(creator=custom_user, is_private=False)
-            videos = VideoModel.objects.filter(creator=custom_user)
+            if videos.exists():
+                context['videos'] = videos
+            else:
+                context['videos'] = None
+            
+            recent_upload = VideoModel.objects.filter(creator=custom_user, is_private=False).first()
+            if recent_upload:
+                context['recent_upload'] = recent_upload
+            else:
+                context['recent_upload'] = None
+
+            most_popular = VideoModel.objects.filter(creator=custom_user).order_by('-view_count')
+            if most_popular.exists():
+                most_popular = most_popular[:3]
+            else:
+                most_popular = None
+            context['most_popular'] = most_popular
             context['custom_user'] = custom_user
-            context['videos'] = videos
             context['user'] = self.request.user
+            if self.request.user.is_authenticated and self.request.user.username == custom_user.username:
+                context['is_owner'] = True
+            if not videos:
+                context['has_no_videos'] = True 
             return context
         except Http404:
             context['error'] = 'User not found'
@@ -56,6 +75,23 @@ class ProfileView(TemplateView):
         return self.render_to_response(context)
 
 
+class UpdateProfileView(LoginRequiredMixin, UpdateView):
+    model = CustomProfile
+    form_class = UpdateProfileForm
+    template_name = 'profile_update.html'
+
+    def get_object(self, queryset=None):
+        return User.objects.get(username=self.kwargs['username'])
+
+    def form_valid(self, form):
+        self.object.bio = form.cleaned_data['bio']
+        self.object.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('profile', kwargs={'username': self.object.username})
+
+        
 class VideoList(ListView):
     model = VideoModel
     template_name = 'list_video.html'
@@ -72,7 +108,20 @@ class CreateVideo(LoginRequiredMixin, CreateView):
     fields = ['title', 'description', 'video_upload', 'thumbnail_upload', 'is_private']
 
     def form_valid(self, form):
-        custom_user, created = CustomUser.objects.get_or_create(username=self.request.user.username)
+        custom_user, created = User.objects.get_or_create(username=self.request.user.username)
+        form.instance.creator = custom_user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('home', kwargs={'slug': self.object.slug})
+
+class UpdateVideo(LoginRequiredMixin, UpdateView):
+    model = VideoModel
+    fields = ['title', 'description']
+    template_name = 'update_video.html'
+
+    def form_valid(self, form):
+        custom_user, created = User.objects.get_or_create(username=self.request.user.username)
         form.instance.creator = custom_user
         return super().form_valid(form)
 
@@ -96,7 +145,7 @@ class DetailVideo(DetailView):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
         if self.request.user.is_authenticated:
-            custom_user = CustomUser.objects.get(username=self.request.user.username)
+            custom_user = User.objects.get(username=self.request.user.username)
         else:
             custom_user = None
         video = VideoModel.objects.filter(slug=self.kwargs.get('slug'), creator=custom_user).first()
@@ -106,21 +155,6 @@ class DetailVideo(DetailView):
             context['is_creator'] = False
         return context
 
-
-
-class UpdateVideo(LoginRequiredMixin, UpdateView):
-    model = VideoModel
-    fields = ['title', 'description']
-    template_name = 'update_video.html'
-
-    def form_valid(self, form):
-    # Get or create a CustomUser object for the currently logged-in user
-        custom_user, created = CustomUser.objects.get_or_create(username=self.request.user.username)
-        form.instance.creator = custom_user
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return reverse('video-detail', kwargs={'slug': self.object.slug})
 
 class DeleteVideo(LoginRequiredMixin, DeleteView):
     model = VideoModel
@@ -135,18 +169,22 @@ class SearchVideo(View):
         search_query = request.GET.get('search_query')
         keywords = search_query.split(" ")
         videos = VideoModel.objects.none()
+        users = User.objects.none()
         if search_query:
             for keyword in keywords:
                 videos |= VideoModel.objects.filter(Q(title__icontains=keyword) | Q(creator__username__icontains=keyword))
-            if not videos:
+                users |= User.objects.filter(Q(username__icontains=keyword)) 
+            if not videos and not users:
                 suggested_videos = VideoModel.objects.all()[:5]
                 context = {'message': "No results were found. Here are some suggested videos.", 'suggested_videos': suggested_videos}
             else:
-                context = {'videos': videos}
+                context = {'videos': videos, 'users': users}
         else:
             videos = VideoModel.objects.all()
             context = {'videos': videos}
         return render(request, 'search_results.html', context)
+
+
 
 
 class VideoDashboard(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -155,13 +193,17 @@ class VideoDashboard(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        custom_user = get_object_or_404(CustomUser, username=kwargs['username'])
+        custom_user = get_object_or_404(User, username=kwargs['username'])
+        context['videos'] = VideoModel.objects.all()
         context['number_of_videos'] = VideoModel.objects.filter(creator = custom_user).count()
-        context['private_videos'] = VideoModel.objects.filter(is_private = True, creator = custom_user).count()
+        context['private_videos'] = VideoModel.objects.filter(Q(is_private = True) | Q(is_private=None), creator = custom_user).count()
         context['total_views'] = VideoModel.objects.filter(creator=custom_user).aggregate(Sum('view_count'))['view_count__sum']
+        print(context['total_views'])
         context['popular_videos'] = VideoModel.objects.filter(creator=custom_user).order_by('-view_count')[:5]
-
+        if self.request.user.is_authenticated and self.request.user.username == custom_user.username:
+            context['is_owner'] = True
         return context
+
 
     def test_func(self):
         return self.request.user.username == self.kwargs['username']

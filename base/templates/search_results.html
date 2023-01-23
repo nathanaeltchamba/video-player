@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div class="container">
+<div class="container mb-4">
     <div class="searchbar mt-4">
         <form class="d-flex my-2 my-lg-0" method="GET" action="{% url 'search' %}">
             <input class="form-control me-sm-2 border border-primary rounded-pill" type="text" name="search_query"
@@ -13,59 +13,112 @@
         </form>
     </div>
 </div>
-{% if videos %}
-    {% for video in videos %}
-        {% if not video.is_private %}
-  
-    <div class="container mt-5">
-        <div class="border border-light bg-light">
-            <div class="row gap-0 mb-5">
-                <div class="col-4 offset-2">
-                    <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3" src="/media/{{ video.thumbnail_upload }}"
-                        width="360" height="240" alt="thumbnail image"></a>
+
+
+<div class="container">
+    {% if users %}
+    {% for user in users %}
+
+    <div class="row gap-0 my-5">
+        <div class="col-md-8 offset-2">
+            <div class="mt-2">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class=""><a class="text-decoration-none list-unstyled text-dark" href="{% url 'profile' user.username %}">@{{user.username}}</a></h5>
                     </div>
-                    <div class="col-5 offset-1 ">
-                        <div id="video-description" class=" p-3 ">
-                            <a class="link-dark text-decoration-none" href="{% url 'video-detail' video.slug %}"><h3 id="search-title" class="fw-light">{{ video.title }}</h3></a>
-                            <p class="fw-light text-sm">{{video.view_count|format_view_count}} views &bull; {{ video.elapsed_time }}</p>
-                            <a class="link-dark text-decoration-none" href="{% url 'profile' user.username %}"><p class="fw-light text-sm">@{{video.creator}}</p></a>
-                            <p class="fw-light">{{ video.description }}</p>
+                    <div class="col-md-6">
+                        <div class="mb-2">
+                            <p class="fw-bold">{{user.first_name}} {{user.last_name}}</p>
+                            {% comment %}
+                                {% for video in videos %}
+                                    {% if not video.is_private %}
+                                        <p>{{video.title}}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endcomment %}
                         </div>
                     </div>
                 </div>
+
+            </div>
         </div>
-        </div>
-    
-        {% endif %}
     {% endfor %}
-{% else %}
-<div class="container mt-5">
-    <h3 class="text-center mb-2">{{message}}</h3>
-    {% for video in suggested_videos %}
+    {% else %}
+
+            {% endif %}
+
+        {% if videos %}
+        {% for video in videos %}
         {% if not video.is_private %}
-            <div class="border border-light bg-light">
-                <div class="row gap-0 my-5">
-                    <div class="col-4 offset-2">
-                        <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3" src="/media/{{ video.thumbnail_upload }}"
-                                width="360" height="240" alt="thumbnail image"></a>
-                    </div>
-                    <div class="col-5 offset-1 ">
-                        <div id="video-description" class=" p-3 ">
-                            <a class="link-dark text-decoration-none" href="{% url 'video-detail' video.slug %}">
-                                <h3 id="search-title" class="fw-light">{{ video.title }}</h3>
-                            </a>
-                            <p class="fw-light text-sm">{{video.view_count|format_view_count}} views &bull; {{ video.elapsed_time }}</p>
-                            <a class="link-dark text-decoration-none" href="{% url 'profile' user.username %}">
-                                <p class="fw-light text-sm">@{{video.creator}}</p>
-                            </a>
-                            <p class="fw-light">{{ video.description }}</p>
+        <div class="test">
+            <div class="test1">
+                <div class="border rounded-1 border-light bg-light">
+                    <div class="row gap-0 my-5">
+                        <div class="col-4 offset-2">
+                            <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3"
+                                    src="/media/{{ video.thumbnail_upload }}" width="360" height="240"
+                                    alt="thumbnail image"></a>
+                        </div>
+                        <div class="col-5 offset-1 ">
+                            <div id="video-description" class=" p-3 ">
+                                <a class="link-dark text-decoration-none" href="{% url 'video-detail' video.slug %}">
+                                    <h3 id="search-title" class="fw-light">{{ video.title }}</h3>
+                                </a>
+                                <p class="fw-light text-sm">{{video.view_count|format_view_count}} views &bull;
+                                    {{video.elapsed_time }}</p>
+                                <a class="link-dark text-decoration-none" href="{% url 'profile' video.creator.username %}">
+                                    <p class="fw-light text-sm">@{{video.creator}}</p>
+                                </a>
+                                <p class="fw-light">{{ video.description }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        {% endif %}
-    {% endfor %}
-</div>
-{% endif %}
 
+            {% endif %}
+            {% endfor %}
+            {% else %}
+            <div class="container">
+                <div class="row gap-0 my-2">
+                    <div class="">
+                        <div class="mt-5">
+                            <h3 class="text-center mb-2">{{message}}</h3>
+                            {% for video in suggested_videos %}
+                            {% if not video.is_private %}
+                            <div class="border border-light bg-light">
+                                <div class="row gap-0 my-5">
+                                    <div class="col-md-4 offset-2">
+                                        <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3"
+                                                src="/media/{{ video.thumbnail_upload }}" width="360" height="240"
+                                                alt="thumbnail image"></a>
+                                    </div>
+                                    <div class="col-5 offset-1">
+                                        <div id="video-description" class=" p-3 ">
+                                            <a class="link-dark text-decoration-none"
+                                                href="{% url 'video-detail' video.slug %}">
+                                                <h3 id="search-title" class="fw-light">{{ video.title }}</h3>
+                                            </a>
+                                            <p class="fw-light text-sm">{{video.view_count|format_view_count}} views
+                                                &bull;
+                                                {{video.elapsed_time}}</p>
+                                            <a class="link-dark text-decoration-none"
+                                                href="{% url 'profile' user.username %}">
+                                                <p class="fw-light text-sm">@{{video.creator}}</p>
+                                            </a>
+                                            <p class="fw-light">{{ video.description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock content %}

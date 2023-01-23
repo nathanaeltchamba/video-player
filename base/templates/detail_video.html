@@ -12,7 +12,7 @@
         </form>
     </div>
 </div>
-<div class="container">
+<div class="container mt-5">
     <div class="row">
         <div class="col-lg-8">
             <div class="video-container" style="width: 640px; height: 360px;">
@@ -33,6 +33,16 @@
                     <div class="card-text">
                         <p>{{ object.description }}</p>
                     </div>
+                </div>
+            </div>
+            <div class="edit-tools w-75">
+                <div class="d-flex justify-content-between">
+                    {% if is_creator %}
+                    <a class="m-2 text-decoration-none text-white p-2 border bg-primary rounded-3"
+                        href="{% url 'video-update' object.slug %}">Edit</a>
+                    <a class="m-2 text-decoration-none text-white p-2 border bg-danger rounded-3"
+                        href="{% url 'video-delete' object.slug %}">Delete</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -13,7 +13,7 @@
 </div>
 
 {% if is_owner %}
-<div class="container">
+  <div class="container">
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-3">
@@ -25,8 +25,7 @@
                     <div>
                         {% if user.username == custom_user.username %}
                         <a class="btn btn-outline-primary rounded-pill" href="{% url 'video-create' %}">Create Video</a>
-                        <a class="btn btn-outline-primary rounded-pill"
-                            href="{% url 'update-profile' user.username %}">Customize Profile</a>
+                        <a class="btn btn-outline-primary rounded-pill" href="{% url 'update-profile' user.username %}">Customize Profile</a>
                         {% else %}
                         <button href="#" class="btn btn-sm btn-outline-danger rounded-pill">Subscribe</button>
                         {% endif %}
@@ -35,7 +34,7 @@
             </div>
         </div>
         {% if videos %}
-
+          
         <div class="row">
             <div class="col-lg-12">
                 <div class="my-5">
@@ -45,14 +44,13 @@
                             <div class="card bg-light border border-light" style="width: 48rem;">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <a href="{% url 'video-detail' recent_upload.slug %}"><img
-                                                src="/media/{{ recent_upload.thumbnail_upload }}" class="card-img m-2"
-                                                alt="Video Thumbnail" style="width: 160px; height: 130px;"></a>
+                                        <a href="{% url 'video-detail' recent_upload.slug %}"><img src="/media/{{ recent_upload.thumbnail_upload }}" class="card-img m-2" alt="Video Thumbnail"
+                                            style="width: 160px; height: 130px;"></a>
                                     </div>
                                     <div class="col-md-8">
                                         <div class="card-body">
                                             <h5 class="card-title">{{ recent_upload.title }}</h5>
-                                            <p>@{{recent_upload.creator}} &bull; {{recent_upload.uploaded_at|date:'F j,Y'}}</p>
+                                            <p>@{{recent_upload.creator}} &bull; {{recent_upload.uploaded_at|date:'F j, Y'}}</p>
                                             <p class="card-text">{{ recent_upload.description }}</p>
                                         </div>
                                     </div>
@@ -66,14 +64,13 @@
                             <div class="card bg-light border border-light" style="width: 36rem;">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <a href="{% url 'video-detail' video.slug %}"><img
-                                                src="/media/{{ video.thumbnail_upload }}" class="card-img m-2"
-                                                alt="Video Thumbnail" style="width: 120px; height: 90px;"></a>
+                                        <a href="{% url 'video-detail' video.slug %}"><img src="/media/{{ video.thumbnail_upload }}" class="card-img m-2" alt="Video Thumbnail"
+                                            style="width: 120px; height: 90px;"></a>
                                     </div>
                                     <div class="col-md-8">
                                         <div class="card-body">
                                             <h5 class="card-title">{{ video.title }}</h5>
-                                            <p>@{{video.creator}} &bull; {{video.view_count|format_view_count}} views {{video.uploaded_at|date:'F j, Y'}}</p>
+                                            <p>@{{video.creator}} &bull; {{video.view_count|format_view_count}} views  {{video.uploaded_at|date:'F j, Y'}}</p>
                                             <p class="card-text">{{ video.description }}</p>
                                         </div>
                                     </div>
@@ -93,12 +90,10 @@
                     <div class="col-md-4">
                         <div class="profile-videos">
                             <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3"
-                                    src="/media/{{ video.thumbnail_upload }}" width="360" height="240"
-                                    alt="thumbnail image"></a>
+                                    src="/media/{{ video.thumbnail_upload }}" width="360" height="240" alt="thumbnail image"></a>
                             <div class="caption">
                                 <div>
-                                    <a class="link-dark text-decoration-none"
-                                        href="{% url 'video-detail' video.slug %}">
+                                    <a class="link-dark text-decoration-none" href="{% url 'video-detail' video.slug %}">
                                         <h4 class="mt-2 text-break fw-bold">{{video.title}}</h4>
                                     </a>
                                     <a class="text-decoration-none text-dark fw-lighter fst-italic my-3"
@@ -125,12 +120,10 @@
                     <div class="col-md-4">
                         <div class="profile-videos">
                             <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3"
-                                    src="/media/{{ video.thumbnail_upload }}" width="360" height="240"
-                                    alt="thumbnail image"></a>
+                                    src="/media/{{ video.thumbnail_upload }}" width="360" height="240" alt="thumbnail image"></a>
                             <div class="caption">
                                 <div>
-                                    <a class="link-dark text-decoration-none"
-                                        href="{% url 'video-detail' video.slug %}">
+                                    <a class="link-dark text-decoration-none" href="{% url 'video-detail' video.slug %}">
                                         <h4 class="mt-2 text-break fw-bold">{{video.title}}</h4>
                                     </a>
                                     <a class="text-decoration-none text-dark fw-lighter fst-italic my-3"
@@ -153,39 +146,19 @@
             </div>
         </div>
         {% else %}
-        <div class="container my-5">
-            <div class="text-center mt-5">
-                <h4>You currently have no videos to display</h4>
-                <h5>Create a Video to view on your profile</h5>
+            <div class="container my-5">
+                <div class="text-center mt-5">
+                    <h4>You currently have no videos to display</h4>
+                    <h5>Create a Video to view on your profile</h5>
+                </div>
             </div>
-        </div>
         {% endif %}
     </div>
 
-</div>
+  </div>
 
-{% else %}
-{% if has_no_videos %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-3">
-            <h3>{{custom_user.first_name}} {{custom_user.last_name}}</h3>
-        </div>
-        <div class="col-md-9">
-            <div class="d-flex justify-content-around">
-                <h1>@{{custom_user.username}}'s Channel</h1>
-                <div>
-                    <button href="#" class="btn btn-sm btn-outline-danger rounded-pill">Subscribe</button>
-
-                </div>
-
-            </div>
-        </div>
-    </div>
-    <h4 class="text-center">@{{ custom_user }} has no videos yet</h4>
-</div>
-{% else %}
-<div class="container">
+  {% else %}
+    {% if has_no_videos %}
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-3">
@@ -195,105 +168,125 @@
                 <div class="d-flex justify-content-around">
                     <h1>@{{custom_user.username}}'s Channel</h1>
                     <div>
-                        {% if user.username == custom_user.username %}
-                        <a class="btn btn-outline-primary rounded-pill" href="{% url 'video-create' %}">Create Video</a>
-                        <a class="btn btn-outline-primary rounded-pill"
-                            href="{% url 'update-profile' user.username %}">Customize Profile</a>
-                        {% else %}
                         <button href="#" class="btn btn-sm btn-outline-danger rounded-pill">Subscribe</button>
-                        {% endif %}
+        
                     </div>
+        
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="my-5">
-                    <div class="row my-3">
-                        <div class="col-md-8">
-                            <h3>Featured Video</h3>
-                            <div class="card bg-light border border-light" style="width: 48rem;">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <a href="{% url 'video-detail' recent_upload.slug %}"><img
-                                                src="/media/{{ recent_upload.thumbnail_upload }}" class="card-img m-2"
-                                                alt="Video Thumbnail" style="width: 160px; height: 130px;"></a>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="card-body">
-                                            <h5 class="card-title">{{ recent_upload.title }}</h5>
-                                            <p>@{{recent_upload.creator}} &bull; {{recent_upload.uploaded_at|date:'Fj,Y'}}</p>
-                                            <p class="card-text">{{ recent_upload.description }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <h3>Popular Uploads</h3>
-                            {% for video in most_popular %}
-                            <div class="card bg-light border border-light" style="width: 36rem;">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <a href="{% url 'video-detail' video.slug %}"><img
-                                                src="/media/{{ video.thumbnail_upload }}" class="card-img m-2"
-                                                alt="Video Thumbnail" style="width: 120px; height: 90px;"></a>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="card-body">
-                                            <h5 class="card-title">{{ video.title }}</h5>
-                                            <p>@{{video.creator}} &bull; {{video.view_count|format_view_count}} views {{video.uploaded_at | date:'F j, Y'}}</p>
-                                            <p class="card-text">{{ video.description }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                <div class="my-3">
-                    <h2>Recent Videos</h2>
-                </div>
-                <div class="row">
-                    {% for video in videos %}
-                    {% if not video.is_private %}
-                    <div class="col-md-4">
-                        <div class="profile-videos">
-                            <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3"
-                                    src="/media/{{ video.thumbnail_upload }}" width="360" height="240"
-                                    alt="thumbnail image"></a>
-                            <div class="caption">
-                                <div>
-                                    <a class="link-dark text-decoration-none"
-                                        href="{% url 'video-detail' video.slug %}">
-                                        <h4 class="mt-2 text-break fw-bold">{{video.title}}</h4>
-                                    </a>
-                                    <a class="text-decoration-none text-dark fw-lighter fst-italic my-3"
-                                        href="{% url 'profile' video.creator.username %}">@{{video.creator|title}}</a>
-                                </div>
-                                <div class="row">
-                                    <div class="col-7">
-                                        <p class="fw-light fst-italic">{{video.view_count|format_view_count}} views</p>
-                                    </div>
-                                    <div class="col-5">
-                                        <p class="text-md ms-4 fw-light fst-italic">{{video.elapsed_time}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
+        <h4 class="text-center">@{{ custom_user }} has no videos yet</h4>
     </div>
-
-</div>
-{% endif %}
-
-
+    {% else %}
+    <div class="container">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-3">
+                    <h3>{{custom_user.first_name}} {{custom_user.last_name}}</h3>
+                </div>
+                <div class="col-md-9">
+                    <div class="d-flex justify-content-around">
+                        <h1>@{{custom_user.username}}'s Channel</h1>
+                        <div>
+                            {% if user.username == custom_user.username %}
+                            <a class="btn btn-outline-primary rounded-pill" href="{% url 'video-create' %}">Create Video</a>
+                            <a class="btn btn-outline-primary rounded-pill"
+                                href="{% url 'update-profile' user.username %}">Customize Profile</a>
+                            {% else %}
+                            <button href="#" class="btn btn-sm btn-outline-danger rounded-pill">Subscribe</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="my-5">
+                        <div class="row my-3">
+                            <div class="col-md-8">
+                                <h3>Featured Video</h3>
+                                <div class="card bg-light border border-light" style="width: 48rem;">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <a href="{% url 'video-detail' recent_upload.slug %}"><img
+                                                    src="/media/{{ recent_upload.thumbnail_upload }}" class="card-img m-2"
+                                                    alt="Video Thumbnail" style="width: 160px; height: 130px;"></a>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ recent_upload.title }}</h5>
+                                                <p>@{{recent_upload.creator}} &bull; {{recent_upload.uploaded_at|date:'F j,Y'}}</p>
+                                                <p class="card-text">{{ recent_upload.description }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h3>Popular Uploads</h3>
+                                {% for video in most_popular %}
+                                <div class="card bg-light border border-light" style="width: 36rem;">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <a href="{% url 'video-detail' video.slug %}"><img
+                                                    src="/media/{{ video.thumbnail_upload }}" class="card-img m-2"
+                                                    alt="Video Thumbnail" style="width: 120px; height: 90px;"></a>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ video.title }}</h5>
+                                                <p>@{{video.creator}} &bull; {{video.view_count|format_view_count}} views {{video.uploaded_at | date:'F j, Y'}}</p>
+                                                <p class="card-text">{{ video.description }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="my-3">
+                        <h2>Recent Videos</h2>
+                    </div>
+                    <div class="row">
+                        {% for video in videos %}
+                        {% if not video.is_private %}
+                        <div class="col-md-4">
+                            <div class="profile-videos">
+                                <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3"
+                                        src="/media/{{ video.thumbnail_upload }}" width="360" height="240"
+                                        alt="thumbnail image"></a>
+                                <div class="caption">
+                                    <div>
+                                        <a class="link-dark text-decoration-none"
+                                            href="{% url 'video-detail' video.slug %}">
+                                            <h4 class="mt-2 text-break fw-bold">{{video.title}}</h4>
+                                        </a>
+                                        <a class="text-decoration-none text-dark fw-lighter fst-italic my-3"
+                                            href="{% url 'profile' video.creator.username %}">@{{video.creator|title}}</a>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <p class="fw-light fst-italic">{{video.view_count|format_view_count}} views</p>
+                                        </div>
+                                        <div class="col-5">
+                                            <p class="text-md ms-4 fw-light fst-italic">{{video.elapsed_time}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    </div>
+    {% endif %}
+    
+  
 {% endif %}
 
 

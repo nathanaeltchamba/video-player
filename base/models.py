@@ -1,21 +1,22 @@
 import subprocess
 from django.db import models
+from django.contrib.auth.models import User
 from django.db.models.signals import pre_save
 from django.utils import timezone
 from django.core.validators import FileExtensionValidator
 from django.utils.text import slugify
 from datetime import timedelta
+from django.conf import settings
 
 # Create your models here.
-class CustomUser(models.Model):
-    username = models.CharField(max_length=30, unique=True)
-    last_login = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return self.username
+class CustomProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=40, null=True)
+    last_name = models.CharField(max_length=50, null=True)
+    bio = models.TextField(blank=True, default='', null=True)
 
 class VideoModel(models.Model):
-    creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     title = models.CharField(max_length=100, null=True)
     description = models.TextField(null=True, blank=True)
     slug = models.SlugField(unique=True)

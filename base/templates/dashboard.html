@@ -4,6 +4,8 @@
 
 {% block content %}
 
+{% if is_owner %}
+{% if videos %}
 <div class="container mt-5">
     <h3 class="fw-light">{{ username|title }}'s Channel Dashboard</h3>
     <!-- <canvas id="myChart"></canvas> -->
@@ -25,7 +27,9 @@
             <div class="card text-white bg-dark h-100 overflow-auto">
                 <div class="card-body p-5 mt-3">
                     <h5 class="card-title"><i class="fa fa-user-friends"></i> Total Views</h5>
-                    <p class="card-text" id="total-views">{{total_views|format_view_count}} views</p>
+                    {% if videos %}
+                    <p class="card-text" id="total-views">{{total_views|default:0|format_view_count}} views</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -45,5 +49,9 @@
         </div>
     </div>
 </div>
+{% endif %}
+{% else %}
+{% endif %}
+
 
 {% endblock content %}
