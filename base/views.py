@@ -84,8 +84,6 @@ class UpdateProfileView(LoginRequiredMixin, UpdateView):
         return User.objects.get(username=self.kwargs['username'])
 
     def form_valid(self, form):
-        self.object.bio = form.cleaned_data['bio']
-        self.object.save()
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -113,7 +111,7 @@ class CreateVideo(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('home', kwargs={'slug': self.object.slug})
+        return reverse('video-detail', kwargs={'slug': self.object.slug})
 
 class UpdateVideo(LoginRequiredMixin, UpdateView):
     model = VideoModel

@@ -5,51 +5,58 @@
 {% block content %}
 
 {% if is_owner %}
-{% if videos %}
-<div class="container mt-5">
-    <h3 class="fw-light">{{ username|title }}'s Channel Dashboard</h3>
-    <!-- <canvas id="myChart"></canvas> -->
-    <hr>
+    {% if videos %}
+    <div class="container mt-5">
+        <h3 class="fw-light">{{ username|title }}'s Channel Dashboard</h3>
+        <!-- <canvas id="myChart"></canvas> -->
+        <hr>
 
-    <div class="row">
-        <div class="col-sm-4">
-            <div class="card text-white bg-dark h-100 overflow-auto">
-                <div class="card-body p-5 mt-3">
-                    <h5 class="card-title"><i class="fas fa-thin fa-video"></i> Total Videos</h5>
-                    <p class="card-text" id="total-videos">{{number_of_videos}}</p>
-                    {% if private_videos > 0 %}
-                    <p class="card-text" id="private-videos">Private Videos: {{ private_videos }}</p>
-                    {% endif %}
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card text-white bg-dark h-100 overflow-auto">
+                    <div class="card-body p-5 mt-3">
+                        <h5 class="card-title"><i class="fas fa-thin fa-video"></i> Total Videos</h5>
+                        <p class="card-text" id="total-videos">{{number_of_videos}}</p>
+                        {% if private_videos > 0 %}
+                        <p class="card-text" id="private-videos">Private Videos: {{ private_videos }}</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="card text-white bg-dark h-100 overflow-auto">
-                <div class="card-body p-5 mt-3">
-                    <h5 class="card-title"><i class="fa fa-user-friends"></i> Total Views</h5>
-                    {% if videos %}
-                    <p class="card-text" id="total-views">{{total_views|default:0|format_view_count}} views</p>
-                    {% endif %}
+            <div class="col-sm-4">
+                <div class="card text-white bg-dark h-100 overflow-auto">
+                    <div class="card-body p-5 mt-3">
+                        <h5 class="card-title"><i class="fa fa-user-friends"></i> Total Views</h5>
+                        {% if videos %}
+                        <p class="card-text" id="total-views">{{total_views|default:0|format_view_count}} views</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="card text-white bg-dark h-100 overflow-auto">
-                <div class="card-body p-5 mt-3">
-                    <h5 class="card-title"><i class="fas fa-thin fa-fire"></i> Most Popular Videos</h5>
-                    <p class="card-text" id="popular-videos">
-                    <ul class="list-unstyled">
-                        {% for video in popular_videos %}
-                        <li>{{ video.title }} &bull; {{video.view_count|format_view_count}} views</li>
-                        {% endfor %}
-                    </ul>
-                    </p>
+            <div class="col-sm-4">
+                <div class="card text-white bg-dark h-100 overflow-auto">
+                    <div class="card-body p-5 mt-3">
+                        <h5 class="card-title"><i class="fas fa-thin fa-fire"></i> Most Popular Videos</h5>
+                        <p class="card-text" id="popular-videos">
+                        <ul class="list-unstyled">
+                            {% for video in popular_videos %}
+                            <li>{{ video.title }} &bull; {{video.view_count|format_view_count}} views</li>
+                            {% endfor %}
+                        </ul>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endif %}
+    {% else %}
+    <div class="container my-5">
+        <div class="text-center mt-5">
+            <h4>You currently have no videos</h4>
+            <h5>Create a Video to view on your Dashboard</h5>
+        </div>
+    </div>
+    {% endif %}
 {% else %}
 {% endif %}
 

@@ -15,8 +15,7 @@ class CustomUserCreationForm(UserCreationForm):
 class UpdateProfileForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
     last_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
-    bio = forms.CharField(max_length=500, required=False, widget=forms.Textarea, help_text='Optional.')
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'bio')
+        fields = ('first_name', 'last_name')
