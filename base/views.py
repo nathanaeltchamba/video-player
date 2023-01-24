@@ -7,11 +7,24 @@ from django.views.generic import ListView, DetailView, DeleteView, UpdateView, T
 from django.db.models import F, Q, Sum
 from .forms import CustomUserCreationForm, UpdateProfileForm
 from . models import User, VideoModel, CustomProfile
+from django.contrib.auth.signals import user_logged_in
+from django.dispatch import receiver
+from django.contrib import messages
 
 
 # Create your views here.
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
+
+@receiver(user_logged_in)
+def display_login_message(sender, request, **kwargs):
+    messages.success(request, 'Successfully logged in!')
+
+def convert_to_mp4(input_file):
+    pass
+
+def generate_thumbnail(input_file):
+    pass
 
 def format_view_count(view_count):
     if view_count > 999999:
