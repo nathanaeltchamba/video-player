@@ -1,30 +1,42 @@
-from django.http import Http404, HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views import View
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, TemplateView, CreateView
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import Http404, HttpResponse
+from django.urls import reverse
 from django.db.models import F, Q, Sum
+from django.contrib import messages
+from django.views import View
+from django.core.files.storage import default_storage
 from .forms import CustomUserCreationForm, UpdateProfileForm
 from . models import User, VideoModel, CustomProfile
-from django.contrib.auth.signals import user_logged_in
-from django.dispatch import receiver
-from django.contrib import messages
+import subprocess
+import os
 
 
 # Create your views here.
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
-@receiver(user_logged_in)
-def display_login_message(sender, request, **kwargs):
-    messages.success(request, 'Successfully logged in!')
-
 def convert_to_mp4(input_file):
-    pass
+    input_extension = input_file.name.split('.')[-1]
+    if input_extension != 'mp4':
+        # will have to convert to a different save when using aws bucket
+        output_file = 'uploads/videos/' + input_file.name.split('.')[0] + '.mp4'
+        subprocess.run(['ffmpeg', '-i', input_file.temporary_file_path(), '-vf', 'scale=1920:-2', '-b:v', '800k', output_file])
+        with open(output_file, 'rb') as f:
+            default_storage.save(output_file, f)
+        return output_file
+    else:
+        return input_file.name
+
 
 def generate_thumbnail(input_file):
-    pass
+    output_file = 'uploads/thumbnails/' + os.path.splitext(os.path.basename(input_file))[0] + '.jpg'
+    subprocess.run(['ffmpeg', '-ss', '1.5', '-i', input_file, '-vframes', '1', '-vf', 'scale=1920:-2', output_file])
+    with open(output_file, 'rb') as f:
+        default_storage.save(output_file, f)
+    return output_file
+
 
 def format_view_count(view_count):
     if view_count > 999999:
@@ -33,6 +45,7 @@ def format_view_count(view_count):
         return '{:,.0f}K'.format(view_count / 1000)
     else:
         return view_count
+
 
 class SignupView(CreateView):
     template_name = 'registration/signup.html'
@@ -43,7 +56,9 @@ class SignupView(CreateView):
         user = form.save()
         # save customeruser
         user.save()
+        messages.success(self.request, 'Your account was created successfully')
         return redirect('login')
+
 
 class ProfileView(TemplateView):
     template_name = 'profile.html'
@@ -58,7 +73,7 @@ class ProfileView(TemplateView):
             else:
                 context['videos'] = None
             
-            recent_upload = VideoModel.objects.filter(creator=custom_user, is_private=False).first()
+            recent_upload = VideoModel.objects.filter(creator=custom_user, is_private=False).last()
             if recent_upload:
                 context['recent_upload'] = recent_upload
             else:
@@ -107,24 +122,31 @@ class VideoList(ListView):
     model = VideoModel
     template_name = 'list_video.html'
     context_object_name = 'videos'
+    ordering = ['uploaded_at']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['videos'] = VideoModel.objects.filter(is_private=False)
         return context
 
+
 class CreateVideo(LoginRequiredMixin, CreateView):
     model = VideoModel
     template_name = 'create_video.html'
-    fields = ['title', 'description', 'video_upload', 'thumbnail_upload', 'is_private']
+    fields = ['title', 'description', 'video_upload', 'is_private']
 
     def form_valid(self, form):
-        custom_user, created = User.objects.get_or_create(username=self.request.user.username)
-        form.instance.creator = custom_user
+        video_upload = form.cleaned_data.get("video_upload")
+        self.object = form.save(commit=False)
+        self.object.creator = self.request.user
+        self.object.video_upload = convert_to_mp4(video_upload)
+        self.object.thumbnail_upload = generate_thumbnail(self.object.video_upload.path)
+        self.object.save()
         return super().form_valid(form)
 
     def get_success_url(self):
         return reverse('video-detail', kwargs={'slug': self.object.slug})
+
 
 class UpdateVideo(LoginRequiredMixin, UpdateView):
     model = VideoModel
@@ -138,6 +160,7 @@ class UpdateVideo(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('video-detail', kwargs={'slug': self.object.slug})
+
 
 class DetailVideo(DetailView):
     model = VideoModel
@@ -175,6 +198,7 @@ class DeleteVideo(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         return reverse('home')
 
+
 class SearchVideo(View):
     def get(self, request):
         search_query = request.GET.get('search_query')
@@ -194,8 +218,6 @@ class SearchVideo(View):
             videos = VideoModel.objects.all()
             context = {'videos': videos}
         return render(request, 'search_results.html', context)
-
-
 
 
 class VideoDashboard(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -221,4 +243,3 @@ class VideoDashboard(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def handle_no_permission(self):
         return redirect('home')
-
