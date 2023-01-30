@@ -14,11 +14,12 @@
 </div>
 <div class="container mt-5">
     <div class="row">
+        {% if object.is_processed %}
         <div class="col-lg-8">
             <div class="video-container" style="width: 640px; height: 360px;">
-                <video data-plyr='plyr' src="/media/{{ object.video_upload }}" style="object-fit: contain; background-color: black;"
+                    <video data-plyr='plyr' src="/media/{{ object.video_upload }}" style="object-fit: contain; background-color: black;"
                     controls data-setup='' type="video/mp4">
-                </video>
+                    </video>
             </div>
             <div style=" width:100%">
                 <h5 class="mt-2">{{ object.title }}</h5>
@@ -55,6 +56,18 @@
                 <li class="list-group-item">Video 3</li>
             </ul> -->
         </div>
+        {% else %}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5 offset-3">
+                    <div class="d-flex justify-content-around">
+                        <h4>Video is processing...</h4>
+                        <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 

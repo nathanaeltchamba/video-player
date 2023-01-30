@@ -11,30 +11,32 @@ from .forms import CustomUserCreationForm, UpdateProfileForm
 from . models import User, VideoModel, CustomProfile
 import subprocess
 import os
+import uuid
 
 
 # Create your views here.
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
+
 def convert_to_mp4(input_file):
     input_extension = input_file.name.split('.')[-1]
-    if input_extension != 'mp4':
-        # will have to convert to a different save when using aws bucket
-        output_file = 'uploads/videos/' + input_file.name.split('.')[0] + '.mp4'
-        subprocess.run(['ffmpeg', '-i', input_file.temporary_file_path(), '-vf', 'scale=1920:-2', '-b:v', '800k', output_file])
-        with open(output_file, 'rb') as f:
-            default_storage.save(output_file, f)
+    if input_extension.lower() != 'mp4' and input_extension.lower() != 'mov':
+        print('it is not mp4 or mov')
+        output_file = 'uploads/videos/' + input_file.name.split('.')[0] + str(uuid.uuid4()) + '.mp4'
+        
+        if default_storage.exists(output_file):
+            return output_file
+        # subprocess.run(['ffmpeg', '-i', input_file.temporary_file_path(), '-vf', 'scale=1080:-2', '-b:v', '800k', output_file])
         return output_file
     else:
+        print('it is an mp4 or mov')
         return input_file.name
 
 
 def generate_thumbnail(input_file):
     output_file = 'uploads/thumbnails/' + os.path.splitext(os.path.basename(input_file))[0] + '.jpg'
-    subprocess.run(['ffmpeg', '-ss', '1.5', '-i', input_file, '-vframes', '1', '-vf', 'scale=1920:-2', output_file])
-    with open(output_file, 'rb') as f:
-        default_storage.save(output_file, f)
+    # subprocess.run(['ffmpeg', '-ss', '1.5', '-i', input_file, '-vframes', '1', '-vf', 'scale=1920:-2', output_file])
     return output_file
 
 
