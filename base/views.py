@@ -19,25 +19,25 @@ def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
 
-def convert_to_mp4(input_file):
-    input_extension = input_file.name.split('.')[-1]
-    if input_extension.lower() != 'mp4' and input_extension.lower() != 'mov':
-        print('it is not mp4 or mov')
-        output_file = 'uploads/videos/' + input_file.name.split('.')[0] + str(uuid.uuid4()) + '.mp4'
+# def convert_to_mp4(input_file):
+#     input_extension = input_file.name.split('.')[-1]
+#     if input_extension.lower() != 'mp4' and input_extension.lower() != 'mov':
+#         print('it is not mp4 or mov')
+#         output_file = 'uploads/videos/' + input_file.name.split('.')[0] + str(uuid.uuid4()) + '.mp4'
         
-        if default_storage.exists(output_file):
-            return output_file
-        # subprocess.run(['ffmpeg', '-i', input_file.temporary_file_path(), '-vf', 'scale=1080:-2', '-b:v', '800k', output_file])
-        return output_file
-    else:
-        print('it is an mp4 or mov')
-        return input_file.name
+#         if default_storage.exists(output_file):
+#             return output_file
+#         # subprocess.run(['ffmpeg', '-i', input_file.temporary_file_path(), '-vf', 'scale=1080:-2', '-b:v', '800k', output_file])
+#         return output_file
+#     else:
+#         print('it is an mp4 or mov')
+#         return input_file.name
 
 
-def generate_thumbnail(input_file):
-    output_file = 'uploads/thumbnails/' + os.path.splitext(os.path.basename(input_file))[0] + '.jpg'
-    # subprocess.run(['ffmpeg', '-ss', '1.5', '-i', input_file, '-vframes', '1', '-vf', 'scale=1920:-2', output_file])
-    return output_file
+# def generate_thumbnail(input_file):
+#     output_file = 'uploads/thumbnails/' + os.path.splitext(os.path.basename(input_file))[0] + '.jpg'
+#     # subprocess.run(['ffmpeg', '-ss', '1.5', '-i', input_file, '-vframes', '1', '-vf', 'scale=1920:-2', output_file])
+#     return output_file
 
 
 def format_view_count(view_count):
@@ -141,8 +141,8 @@ class CreateVideo(LoginRequiredMixin, CreateView):
         video_upload = form.cleaned_data.get("video_upload")
         self.object = form.save(commit=False)
         self.object.creator = self.request.user
-        self.object.video_upload = convert_to_mp4(video_upload)
-        self.object.thumbnail_upload = generate_thumbnail(self.object.video_upload.path)
+        # self.object.video_upload = convert_to_mp4(video_upload)
+        # self.object.thumbnail_upload = generate_thumbnail(self.object.video_upload.path)
         self.object.save()
         return super().form_valid(form)
 
@@ -173,6 +173,8 @@ class DetailVideo(DetailView):
 
     def get(self, request, *args, **kwargs):
         video = self.get_object()
+        if video.is_processed == False:
+            video.view_count == 0
         VideoModel.objects.filter(slug=video.slug).update(view_count=F('view_count')+634)
         video.view_count = format_view_count(video.view_count)
         return super().get(request, *args, **kwargs)
