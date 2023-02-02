@@ -34,6 +34,7 @@
     <div class="row">
 
         {% for video in videos %}
+        {% if video.is_processed == True %}
         <div class="col-md-4">
             <div class="thumbnail">
                 <a href="{% url 'video-detail' video.slug %}"><img class="rounded-3"
@@ -57,6 +58,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         {% endfor %}
     </div>
     {% endif %}
