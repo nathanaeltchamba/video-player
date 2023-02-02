@@ -75,7 +75,7 @@ class ProfileView(TemplateView):
             else:
                 context['videos'] = None
             
-            recent_upload = VideoModel.objects.filter(creator=custom_user, is_private=False, is_processed = False).last()
+            recent_upload = VideoModel.objects.filter(creator=custom_user, is_private=False).last()
             if recent_upload:
                 context['recent_upload'] = recent_upload
             else:
