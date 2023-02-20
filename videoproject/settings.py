@@ -20,6 +20,11 @@ MESSAGE_TAGS = {
         messages.ERROR: 'alert-danger',
  }
 
+CRONJOBS = [
+    ('*/1 * * * *', 'base.cron.my_scheduled_job')
+]
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -50,6 +55,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'pyecharts',
+    'django_crontab',
+    'sendgrid',
 
     # local apps
     'base.apps.BaseConfig',
@@ -153,3 +160,4 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login'
 
 LOGIN_URL = '/login'
+

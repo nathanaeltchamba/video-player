@@ -6,10 +6,10 @@ from django.urls import reverse
 from django.db.models import F, Q, Sum
 from django.contrib import messages
 from django.views import View
-from django.core.files.storage import default_storage
 from .forms import CustomUserCreationForm, UpdateProfileForm
 from . models import User, VideoModel, CustomProfile
-import subprocess
+from sendgrid.helpers.mail import Email, Content, Mail
+import sendgrid
 import os
 import uuid
 
@@ -17,28 +17,6 @@ import uuid
 # Create your views here.
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
-
-
-# def convert_to_mp4(input_file):
-#     input_extension = input_file.name.split('.')[-1]
-#     if input_extension.lower() != 'mp4' and input_extension.lower() != 'mov':
-#         print('it is not mp4 or mov')
-#         output_file = 'uploads/videos/' + input_file.name.split('.')[0] + str(uuid.uuid4()) + '.mp4'
-        
-#         if default_storage.exists(output_file):
-#             return output_file
-#         # subprocess.run(['ffmpeg', '-i', input_file.temporary_file_path(), '-vf', 'scale=1080:-2', '-b:v', '800k', output_file])
-#         return output_file
-#     else:
-#         print('it is an mp4 or mov')
-#         return input_file.name
-
-
-# def generate_thumbnail(input_file):
-#     output_file = 'uploads/thumbnails/' + os.path.splitext(os.path.basename(input_file))[0] + '.jpg'
-#     # subprocess.run(['ffmpeg', '-ss', '1.5', '-i', input_file, '-vframes', '1', '-vf', 'scale=1920:-2', output_file])
-#     return output_file
-
 
 def format_view_count(view_count):
     if view_count > 999999:
@@ -54,12 +32,10 @@ class SignupView(CreateView):
     form_class = CustomUserCreationForm
 
     def form_valid(self, form):
-        # make new customeruser
+        # make new customer user
         user = form.save()
-        # save customeruser
+        # save customer user
         user.save()
-        messages.success(self.request, 'Your account was created successfully')
-        return redirect('login')
 
 
 class ProfileView(TemplateView):
@@ -141,8 +117,6 @@ class CreateVideo(LoginRequiredMixin, CreateView):
         video_upload = form.cleaned_data.get("video_upload")
         self.object = form.save(commit=False)
         self.object.creator = self.request.user
-        # self.object.video_upload = convert_to_mp4(video_upload)
-        # self.object.thumbnail_upload = generate_thumbnail(self.object.video_upload.path)
         self.object.save()
         return super().form_valid(form)
 

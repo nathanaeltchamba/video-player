@@ -45,8 +45,15 @@ class VideoModel(models.Model):
             return f'{elapsed_time.seconds // 60} mins ago'
         elif elapsed_time <= timedelta(days=1):
             return f'{elapsed_time.seconds // 3600} hours ago'
-        else:
+        elif elapsed_time <= timedelta(weeks=2):
             return f'{elapsed_time.days} days ago'
+        elif elapsed_time <= timedelta(days=30):
+            return f'{elapsed_time.days // 7} weeks ago'
+        elif elapsed_time <= timedelta(days=365):
+            return f'{elapsed_time.days // 30} months ago'
+        else:
+            return f'{elapsed_time.days // 365} years ago'
+
 
 
 def pre_save_video_receiver(sender, instance, *args, **kwargs):
@@ -56,4 +63,14 @@ def pre_save_video_receiver(sender, instance, *args, **kwargs):
 pre_save.connect(pre_save_video_receiver, sender=VideoModel)
 
 
+class CronJobLock(models.Model):
+    name = models.CharField(max_length=100, unique=True, primary_key=True)
+    locked_at = models.DateTimeField(auto_now_add=True)
 
+class CronJobLog(models.Model):
+    job = models.CharField(max_length=100)
+    run_at = models.DateTimeField(auto_now_add=True)
+
+
+class Test(models.Model):
+    name = models.CharField(max_length=4)

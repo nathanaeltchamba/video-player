@@ -12,4 +12,5 @@ urlpatterns = [
     path('update-profile/<str:username>/', UpdateProfileView.as_view(), name='update-profile'),
     path('video/search', SearchVideo.as_view(), name='search'),
     path('dashboard/@<str:username>/', VideoDashboard.as_view(), name = 'dashboard'),
+    # path('activate/<int:user_id>/<str:uuid>/', activate_user, name='activate_user')
 ]
